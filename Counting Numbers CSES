@@ -1,0 +1,42 @@
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+int dp[20][20][2][2];
+int solve(string& num,int n,int prev,bool leading,bool tight){
+	if(n==0){
+		return 1;
+	}
+	if(prev!=-1 && dp[n][prev][leading][tight]!=-1) return dp[n][prev][leading][tight];
+	int answer=0;
+	int ub=tight?num[num.length()-n]-'0':9;
+	for(int digit=0;digit<=ub;digit++){
+		if(digit==prev && leading==0) continue;
+		answer+=solve(num,n-1,digit,leading&(digit==0),tight&(digit==ub));
+	}
+	return (prev!=-1)?(dp[n][prev][leading][tight]=answer):answer;
+}
+signed main(){
+	int t=1;
+	// cin>>t;
+	while(t--){
+		int L,R;
+	    cin>>L>>R;
+	    string r=to_string(R);
+	    memset(dp,-1,sizeof dp);
+	    int fr=solve(r,r.length(),-1,1,1);
+	    int fl=0;
+	    if(L!=0){
+	    	L--;
+	    	string l=to_string(L);
+		    memset(dp,-1,sizeof dp);
+		    fl=solve(l,l.length(),-1,1,1);
+		}
+	    cout<<fr-fl<<"\n";
+	}
+	return 0;
+}
+
+// constraints 
+// 1<=T<=100
+// 1<=L<=R<=10^18
+// T.C=O(log10(R)*10)
