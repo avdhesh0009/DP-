@@ -1,0 +1,49 @@
+#include<bits/stdc++.h>
+#define ll long long
+using namespace std;
+int dp[20][2][2][2];
+int solve(string &num,int n,bool even,bool tight,bool leading){
+	if(n==0) return 1;
+	if(dp[n][even][tight][leading]!=-1) return dp[n][even][tight][leading];
+	if(even){
+		vector<int>digits={0,2,4,6,8};
+		int ub=tight?num[num.length()-n]-'0':9;
+		int answer=0;
+		for(int digit:digits){
+			if(digit<=ub) answer+=solve(num,n-1,0,tight&(digit==ub),0);
+		}
+		return dp[n][even][tight][leading]=answer;
+	}
+	vector<int>digits={1,3,5,7,9};
+	int ub=tight?num[num.length()-n]-'0':9;
+	int answer=0;
+	if(leading){
+		answer+=solve(num,n-1,0,0,1);
+	}
+    for(int digit:digits){
+		if(digit<=ub) answer+=solve(num,n-1,1,tight&(digit==ub),0);
+	}
+    return dp[n][even][tight][leading]=answer;
+}
+int main(){
+	int t;
+	cin>>t;
+	while(t--){
+		ll L,R;
+	    cin>>L>>R;
+	    if(L!=0) L--;
+	    string l=to_string(L);
+	    string r=to_string(R);
+	    memset(dp,-1,sizeof dp);
+	    ll fr=solve(r,r.length(),0,1,1);
+	    memset(dp,-1,sizeof dp);
+	    ll fl=solve(l,l.length(),0,1,1);
+	    cout<<fr-fl<<"\n";
+	}
+	return 0;
+}
+
+// constraints 
+// 1<=T<=100
+// 1<=L<=R<=10^18
+// T.C=O(log10(R)*10)
