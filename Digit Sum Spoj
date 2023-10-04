@@ -1,0 +1,50 @@
+// find N-digit number in the range L to R whose sum==x
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+int dp[18][2];
+int cnt(string &num,int n,bool tight){
+	if(n==0) return 1;
+	if(!tight){
+		return (pow(10,n)+0.1);
+	}
+	int answer=0;
+	int ub=num[num.length()-n]-'0';
+	for(int digit=0;digit<=ub;digit++){
+		answer+=cnt(num,n-1,tight&(digit==ub));
+	}
+	return answer;
+}
+int solve(string& num,int n,bool tight){
+	if(n==0) return 0;
+	if(dp[n][tight]!=-1) return dp[n][tight];
+	int ub=tight?num[num.length()-n]-'0':9;
+	int ans=0;
+	for(int digit=0;digit<=ub;digit++){
+		ans+=(digit*cnt(num,n-1,tight&(digit==ub)));
+		ans+=solve(num,n-1,tight&(digit==ub));
+	}
+	return dp[n][tight]=ans;
+}
+signed main(){
+	int t;
+	cin>>t;
+	while(t--){
+		int L,R;
+	    cin>>L>>R;
+	    if(L!=0) L--;
+	    string l=to_string(L);
+	    string r=to_string(R);
+	    memset(dp,-1,sizeof dp);
+	    int fr=solve(r,r.length(),1);
+	    memset(dp,-1,sizeof dp);
+	    int fl=solve(l,l.length(),1);
+	    cout<<fr-fl<<"\n";
+	}
+	return 0;
+}
+
+// constraints 
+// 1<=T<=100
+// 1<=L<=R<=10^18
+// T.C=O(log10(R)*10)
