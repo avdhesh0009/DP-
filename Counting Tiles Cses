@@ -1,0 +1,50 @@
+// find N-digit number in the range L to R whose sum==x
+#include<bits/stdc++.h>
+#define int long long
+using namespace std;
+const int mod=(int)(1e9+7);
+int dp[1<<10][1001];
+void generatemasks(int row,vector<int>&nextmasks,int n,int &prevmask,int mask){
+	if(row==n){
+		nextmasks.push_back(mask);
+		return;
+	}
+	if((prevmask&(1<<row))==0){
+		generatemasks(row+1,nextmasks,n,prevmask,(mask^(1<<row)));
+	}
+	if(row+1<n && (prevmask&(1<<row))==0 && (prevmask&(1<<(row+1)))==0){
+		generatemasks(row+2,nextmasks,n,prevmask,mask);
+	}
+	if((prevmask&(1<<row))!=0){
+		generatemasks(row+1,nextmasks,n,prevmask,mask);
+	}
+}
+int solve(int &n,int &m,int col,int mask){
+	if(col==m){
+		return mask==0;
+	}
+	if(dp[mask][col]!=-1) return dp[mask][col];
+	vector<int>nextmasks;
+	generatemasks(0,nextmasks,n,mask,0);
+	int ans=0;
+	for(int nextmask:nextmasks){
+		ans=(ans+solve(n,m,col+1,nextmask))%mod;
+	}
+	return dp[mask][col]=ans;
+}
+signed main(){
+	int t=1;
+	memset(dp,-1,sizeof dp);
+	// cin>>t;
+	while(t--){
+		int n,m;
+		cin>>n>>m;
+        cout<<solve(n,m,0,0)<<"\n";
+	}
+	return 0;
+}
+
+// constraints 
+// 1<=T<=100
+// 1<=L<=R<=10^18
+// T.C=O(log10(R)*10)
